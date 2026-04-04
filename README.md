@@ -1,4 +1,4 @@
-# MoviesRemind
+# MoviesRemind [My Old Project] 
 
 A minimalist movie watchlist to keep track of films you want to see. Built with FastAPI, SQLite, and Tailwind CSS. This project is fully "dockerized" for easy deployment.
 
