@@ -1,0 +1,12 @@
+services:
+  server:
+    build: .
+    container_name: MoviesRemind
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped

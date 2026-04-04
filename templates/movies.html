@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<title>Watchlist</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+</style>
+</head>
+<body class="bg-black text-white min-h-screen font-sans">
+
+<div class="max-w-7xl mx-auto py-12 px-4">
+
+    <h1 class="text-5xl font-extrabold text-center mb-12 text-white drop-shadow-[0_0_15px_white]">
+        Watchlist
+    </h1>
+
+    <!-- Form -->
+    <form id="movieForm" class="max-w-2xl mx-auto mb-10 flex gap-4 items-end">
+      <div class="relative w-full group">
+        <input
+          type="text"
+          name="title"
+          id="movie_title"
+          placeholder=" "
+          required
+          class="block w-full px-3 pt-5 pb-2 text-white bg-black border-b-2 border-gray-600 appearance-none focus:border-white focus:outline-none focus:ring-2 focus:ring-white/30 peer"
+        />
+        <label
+          for="movie_title"
+          class="absolute left-3 top-1 text-gray-400 text-sm transition-all duration-300 transform scale-100 
+                 peer-placeholder-shown:translate-y-5 peer-placeholder-shown:scale-100 
+                 peer-focus:-translate-y-1 peer-focus:scale-90 peer-focus:text-white bg-black px-0.5"
+        >
+          Movie name
+        </label>
+      </div>
+
+      <button
+        type="submit"
+        class="bg-white/80 text-black font-bold rounded-lg px-6 py-3 shadow-md hover:shadow-white/50 hover:scale-105 transition-all duration-300"
+      >
+        Add
+      </button>
+    </form>
+
+    <!-- Movie grid -->
+    <div id="movieGrid" class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {% for movie in movies %}
+            <div class="fade-in bg-black/70 backdrop-blur-sm rounded-3xl border border-gray-700 overflow-hidden shadow-lg 
+                        hover:shadow-white/40 hover:scale-105 transition-all duration-300 flex flex-col justify-between">
+                
+                <div class="p-6 flex-1 flex items-center justify-center">
+                    <h2 class="text-white font-extrabold text-xl text-center drop-shadow-[0_0_10px_white]">
+                        {{ movie['title'] }}
+                    </h2>
+                </div>
+
+                <div class="p-4 text-center">
+                    <a href="/delete/{{ movie['id'] }}" 
+                       class="bg-white/80 text-black px-5 py-2 rounded-xl font-semibold 
+                              hover:bg-white hover:shadow-white/50 transition-all duration-300">
+                       Delete
+                    </a>
+                </div>
+
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if movies|length == 0 %}
+        <p class="text-center mt-12 text-gray-400 text-lg">No movies added yet</p>
+    {% endif %}
+
+</div>
+
+<script>
+const form = document.getElementById('movieForm');
+const grid = document.getElementById('movieGrid');
+
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const titleInput = document.getElementById('movie_title');
+    const title = titleInput.value.trim();
+    if (!title) return;
+
+    const res = await fetch('/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title })
+    });
+
+    const data = await res.json();
+    const card = document.createElement('div');
+    card.className = 'fade-in bg-black/70 backdrop-blur-sm rounded-3xl border border-gray-700 overflow-hidden shadow-lg hover:shadow-white/40 hover:scale-105 transition-all duration-300 flex flex-col justify-between';
+    card.innerHTML = `
+        <div class="p-6 flex-1 flex items-center justify-center">
+            <h2 class="text-white font-extrabold text-xl text-center drop-shadow-[0_0_10px_white]">${data.title}</h2>
+        </div>
+        <div class="p-4 text-center">
+            <a href="/delete/${data.id}" class="bg-white/80 text-black px-5 py-2 rounded-xl font-semibold hover:bg-white hover:shadow-white/50 transition-all duration-300">Delete</a>
+        </div>
+    `;
+    grid.prepend(card);
+    titleInput.value = '';
+});
+</script>
+
+</body>
+</html>
